@@ -6,8 +6,7 @@ using System.Text;
 
 namespace Service.Category
 {
-    public interface ICategoryService : IBaseService<Domain.Entities.Category>
+    public interface ICategoryService : IBaseService<CategoryDTO,CategoryDTO>
     {
-        Paganation<CategoryDTO> SearchPagination(SerachPaganationDTO<CategoryDTO> entity);
     }
 }

@@ -46,7 +46,7 @@ namespace BE.Controllers
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.ToString());
-                result = CommonResponse(1, Constants.Server.ErrorServer);
+                result = CommonResponse(1, ex.ToString());
             }
 
             return result;
@@ -77,7 +77,8 @@ namespace BE.Controllers
             try
             {
                 var item = _mapper.Map<CategoryDTO, Category>(category);
-                _categoryService.Insert(item);
+                _repository.Insert(item);
+                _unitOfWork.SaveChanges();
 
                 result = CommonResponse(0, Common.Constants.Data.InsertSuccess);
             }
@@ -98,7 +99,8 @@ namespace BE.Controllers
             try
             {
                 var item = _mapper.Map<CategoryDTO, Category>(category);
-                _categoryService.Update(item);
+                _repository.Update(item);
+                _unitOfWork.SaveChanges();
 
                 result = CommonResponse(0, Common.Constants.Data.UpdateSuccess);
             }
@@ -118,7 +120,9 @@ namespace BE.Controllers
             IActionResult result;
             try
             {
-                _categoryService.Delete(Guid.Parse(id));
+                var item = _repository.Find(Guid.Parse(id));
+                _repository.Delete(item);
+                _unitOfWork.SaveChanges();
 
                 result = CommonResponse(0, Common.Constants.Data.DeleteSuccess);
             }

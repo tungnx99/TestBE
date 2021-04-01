@@ -2,6 +2,7 @@
 using Common.Paganation;
 using Domain.DTOs;
 using Infrastructure.EntityFramework;
+using Service.Category;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,64 +12,52 @@ namespace Service.Product
 {
     public class ProductService : IProductService
     {
-        private readonly IRepository<Domain.Entities.Product> _repository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IRepository<Domain.Entities.Product> _repositoryProduct;
+        private readonly IRepository<Domain.Entities.Category> _repositoryCategory;
+        private readonly IRepository<Domain.Entities.Supplier> _repositorySupplier;
         private readonly IMapper _mapper;
 
-        public ProductService(IRepository<Domain.Entities.Product> repository, IUnitOfWork unitOfWork, IMapper mapper)
+        public ProductService(IRepository<Domain.Entities.Product> repositoryProduct, IMapper mapper, IRepository<Domain.Entities.Category> repositoryCategory, IRepository<Domain.Entities.Supplier> repositorySupplier)
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
+            _repositoryProduct = repositoryProduct;
             _mapper = mapper;
+            _repositoryCategory = repositoryCategory;
+            _repositorySupplier = repositorySupplier;
         }
 
-        public void Delete(Guid id)
-        {
-            var entity = _repository.Find(id);
-            _repository.Delete(entity);
-            _unitOfWork.SaveChanges();
-        }
-
-        public void Insert(Domain.Entities.Product entity)
-        {
-            _repository.Insert(entity);
-            _unitOfWork.SaveChanges();
-        }
-
-        public void InsertRange(List<Domain.Entities.Product> entities)
-        {
-            _unitOfWork.BeginTransaction();
-            _repository.InsertRange(entities);
-            _unitOfWork.Commit();
-        }
-
-        public Paganation<ProductDTO> SearchPagination(SerachPaganationDTO<ProductDTO> entity)
+        PaginatedList<ProductDTO> IBaseService<ProductDTO, SearchProductDTO>.SearchPagination(SerachPaganationDTO<SearchProductDTO> entity)
         {
             if (entity == null)
             {
-                return new Paganation<ProductDTO>();
+                return new PaginatedList<ProductDTO>(null, 0, 0, 0);
             }
 
-            var result = _mapper.Map<SerachPaganationDTO<ProductDTO>, Paganation<ProductDTO>>(entity);
-            var query = _repository.Queryable();
-           
-            var queryData = query.Where(it => entity.Search == null ||
-                (
-                    it.Name.Contains(entity.Search.Name)
-                )
-            ).OrderBy(t => t.Name).ThenBy(t => t.SupplierId).ThenBy(t => t.CategoryId);
+            //var query = _repository.Queryable().Where(it => entity.Search == null ||
+            //    (
+            //        (entity.Search.Id == Guid.Empty ? false : it.Id == entity.Search.Id) ||
+            //        it.Name.Contains(entity.Search.Name) ||
+            //        it.Description.Contains(entity.Search.Description)
+            //    )
+            //).OrderBy(t => t.Name);
 
-            var datats = queryData.Take(entity.Take).Skip(entity.Skip).ToList();
-            var count = query.Count();
-            result.InputData(totalItems: count, data: _mapper.Map<List<Domain.Entities.Product>, List<ProductDTO>>(datats));
+            var query = (
+                             from p in _repositoryProduct.Queryable()
+                             join c in _repositoryCategory.Queryable() on p.CategoryId equals c.Id
+                             join s in _repositorySupplier.Queryable() on p.SupplierId equals s.Id
+                             where entity.Search == null ||
+                                (
+                                    p.Name.Contains(entity.Search.Name) ||
+                                    (entity.Search.Supplier == null ? false : s.Name.Contains(entity.Search.Supplier.Name)) ||
+                                    (entity.Search.Category == null ? false : c.Name.Contains(entity.Search.Category.Name))
+                                )
+                             select p
+                         );
+
+            var data = _mapper.Map<List<Domain.Entities.Product>, List<ProductDTO>>(query.ToList());
+            var result = new PaginatedList<ProductDTO>(data, data.Count, entity.PageIndex, entity.PageSize);
+            result.GetPageData();
 
             return result;
-        }
-
-        public void Update(Domain.Entities.Product entity)
-        {
-            _repository.Update(entity);
-            _unitOfWork.SaveChanges();
         }
     }
 }

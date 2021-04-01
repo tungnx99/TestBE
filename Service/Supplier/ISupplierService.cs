@@ -1,13 +1,13 @@
 ﻿using Common.Paganation;
 using Domain.DTOs;
+using Service.Category;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Service.Supplier
 {
-    public interface ISupplierService : IBaseService<Domain.Entities.Supplier>
+    public interface ISupplierService : IBaseService<SupplierDTO,SupplierDTO>
     {
-        Paganation<SupplierDTO> SearchPagination(SerachPaganationDTO<Domain.Entities.Supplier> entity);
     }
 }

@@ -34,7 +34,7 @@ namespace BE.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCategories([FromQuery] SerachPaganationDTO<ProductDTO> serachPaganation)
+        public IActionResult GetCategories([FromHeader] SerachPaganationDTO<SearchProductDTO> serachPaganation)
         {
             IActionResult result;
             try
@@ -58,7 +58,8 @@ namespace BE.Controllers
             try
             {
                 var item = _mapper.Map<ProductDTO, Product>(dto);
-                _productService.Insert(item);
+                _repository.Insert(item);
+                _unitOfWork.SaveChanges();
 
                 result = CommonResponse(0, Common.Constants.Data.InsertSuccess);
             }
@@ -79,7 +80,8 @@ namespace BE.Controllers
             try
             {
                 var item = _mapper.Map<ProductDTO, Product>(category);
-                _productService.Update(item);
+                _repository.Update(item);
+                _unitOfWork.SaveChanges();
 
                 result = CommonResponse(0, Common.Constants.Data.UpdateSuccess);
             }
@@ -99,7 +101,9 @@ namespace BE.Controllers
             IActionResult result;
             try
             {
-                _productService.Delete(Guid.Parse(id));
+                var item = _repository.Find(Guid.Parse(id));
+                _repository.Delete(item);
+                _unitOfWork.SaveChanges();
 
                 result = CommonResponse(0, Common.Constants.Data.DeleteSuccess);
             }
