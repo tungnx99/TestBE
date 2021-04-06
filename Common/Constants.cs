@@ -18,10 +18,10 @@ namespace Common
 
         public static class Data
         {
-            public static readonly object InsertSuccess;
-            public static readonly object UpdateSuccess;
-            public static readonly object DeleteSuccess;
-            public static readonly string UploadFail;
+            public static readonly string InsertSuccess = "Insert Success";
+            public static readonly string UpdateSuccess = "Update Success";
+            public static readonly string DeleteSuccess = "Delete Success";
+            public static readonly string UploadFail = "Upload Fail";
         }
     }
 }

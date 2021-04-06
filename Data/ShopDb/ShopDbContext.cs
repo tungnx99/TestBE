@@ -16,5 +16,26 @@ namespace Data
         DbSet<Category> Categories { get; set; }
         DbSet<Supplier> Suppliers { get; set; }
         DbSet<Product> Products { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            ////custum name dbo
+
+            //modelBuilder.HasDefaultSchema("Log");
+
+            modelBuilder.Entity<Supplier>()
+                .HasMany(s => s.Product)
+                .WithOne(s => s.Supplier)
+                .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<Category>()
+                .HasMany(s => s.Product)
+                .WithOne(s => s.Category)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Product>()
+                .HasIndex(it => new { it.Name });
+        }
     }
 }

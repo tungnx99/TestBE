@@ -6,6 +6,7 @@ namespace Domain.Entities
 {
     public class Supplier : BaseCategory
     {
-        public ICollection<Product> Product { get; set; }
+        public bool IsDeleted { get; set; }
+        public virtual ICollection<Product> Product { get; set; }
     }
 }

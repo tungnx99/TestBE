@@ -21,15 +21,11 @@ namespace BE.Controllers
     [ApiController]
     public class CategoryController : BaseController
     {
-        private readonly IRepository<Category> _repository;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
 
-        public CategoryController(IRepository<Category> repository, IUnitOfWork unitOfWork, ICategoryService categoryService, IMapper mapper)
+        public CategoryController(ICategoryService categoryService, IMapper mapper)
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
             _categoryService = categoryService;
             _mapper = mapper;
         }
@@ -37,6 +33,7 @@ namespace BE.Controllers
         [HttpGet]
         public IActionResult GetCategories([FromQuery] SerachPaganationDTO<CategoryDTO> serachPaganation)
         {
+
             IActionResult result;
             try
             {
@@ -53,86 +50,30 @@ namespace BE.Controllers
         }
 
         [HttpGet("all")]
-        public IActionResult GetAll()
+        public Task<IActionResult> GetAll()
         {
-            IActionResult result;
-            try
-            {
-                var products = _repository.Queryable().ToList();
-                result = CommonResponse(0, products);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Error: " + ex.ToString());
-                result = CommonResponse(1, Constants.Server.ErrorServer);
-            }
-
+            var result = _categoryService.GetList();
             return result;
         }
 
         [HttpPost]
-        public IActionResult SaveCategory([FromForm] CategoryDTO category)
+        public Task<IActionResult> SaveCategory([FromForm] CategoryDTOInsert category)
         {
-            IActionResult result;
-            try
-            {
-                var item = _mapper.Map<CategoryDTO, Category>(category);
-                _repository.Insert(item);
-                _unitOfWork.SaveChanges();
-
-                result = CommonResponse(0, Common.Constants.Data.InsertSuccess);
-            }
-            catch (Exception ex)
-            {
-                _unitOfWork.Rollback();
-                Debug.WriteLine("Error: ", ex.ToString());
-                result = CommonResponse(0, Common.Constants.Server.ErrorServer);
-            }
-
+            var result = _categoryService.Create(category);
             return result;
         }
 
         [HttpPut]
-        public IActionResult UpdateCategory([FromForm] CategoryDTO category)
+        public Task<IActionResult> UpdateCategory([FromForm] CategoryDTO category)
         {
-            IActionResult result;
-            try
-            {
-                var item = _mapper.Map<CategoryDTO, Category>(category);
-                _repository.Update(item);
-                _unitOfWork.SaveChanges();
-
-                result = CommonResponse(0, Common.Constants.Data.UpdateSuccess);
-            }
-            catch (Exception ex)
-            {
-                _unitOfWork.Rollback();
-                Debug.WriteLine("Error: ", ex.ToString());
-                result = CommonResponse(0, Common.Constants.Server.ErrorServer);
-            }
-
+            var result = _categoryService.Update(category);
             return result;
         }
 
         [HttpDelete]
-        public IActionResult DeleteCategory([FromQuery] String id)
+        public Task<IActionResult> DeleteCategory([FromQuery] String id)
         {
-            IActionResult result;
-            try
-            {
-                var item = _repository.Find(Guid.Parse(id));
-                _repository.Delete(item);
-                _unitOfWork.SaveChanges();
-
-                result = CommonResponse(0, Common.Constants.Data.DeleteSuccess);
-            }
-            catch (Exception ex)
-            {
-                _unitOfWork.Rollback();
-                Debug.WriteLine("Error: ", ex.ToString());
-                result = CommonResponse(0, Common.Constants.Server.ErrorServer);
-            }
-
+            var result = _categoryService.Delete(Guid.Parse(id));
             return result;
         }
     }

@@ -3,7 +3,7 @@ using Infrastructure.EntityFramework;
 
 namespace Service.Category
 {
-    public interface IBaseService<T,F>
+    public interface IBasePagingService<T,F>
     {
         public PaginatedList<T> SearchPagination(SerachPaganationDTO<F> entity);
     }

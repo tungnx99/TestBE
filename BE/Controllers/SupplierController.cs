@@ -20,17 +20,11 @@ namespace BE.Controllers
     [ApiController]
     public class SupplierController : BaseController
     {
-        private readonly IRepository<Supplier> _repository;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly ISupplierService _productService;
         private readonly IMapper _mapper;
 
-        public IUnitOfWork UnitOfWork => _unitOfWork;
-
-        public SupplierController(IRepository<Supplier> repository, IUnitOfWork unitOfWork, ISupplierService productService, IMapper mapper)
+        public SupplierController(ISupplierService productService, IMapper mapper)
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
             _productService = productService;
             _mapper = mapper;
         }
@@ -54,86 +48,30 @@ namespace BE.Controllers
         }
 
         [HttpGet("all")]
-        public IActionResult GetAll()
+        public Task<IActionResult> GetAll()
         {
-            IActionResult result;
-            try
-            {
-                var products = _repository.Queryable().ToList();
-                result = CommonResponse(0, products);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Error: " + ex.ToString());
-                result = CommonResponse(1, Constants.Server.ErrorServer);
-            }
-
+            var result = _productService.GetList();
             return result;
         }
 
         [HttpPost]
-        public IActionResult SaveCategory([FromForm] SupplierDTO dto)
+        public Task<IActionResult> SaveCategory([FromForm] SupplierDTOInsert dto)
         {
-            IActionResult result;
-            try
-            {
-                var item = _mapper.Map<SupplierDTO, Supplier>(dto);
-                _repository.Insert(item);
-                _unitOfWork.SaveChanges();
-
-                result = CommonResponse(0, Common.Constants.Data.InsertSuccess);
-            }
-            catch (Exception ex)
-            {
-                UnitOfWork.Rollback();
-                Debug.WriteLine("Error: ", ex.ToString());
-                result = CommonResponse(0, Common.Constants.Server.ErrorServer);
-            }
-
+            var result = _productService.Create(dto);
             return result;
         }
 
         [HttpPut]
-        public IActionResult UpdateCategory([FromForm] SupplierDTO category)
+        public Task<IActionResult> UpdateCategory([FromForm] SupplierDTO category)
         {
-            IActionResult result;
-            try
-            {
-                var item = _mapper.Map<SupplierDTO, Supplier>(category);
-                _repository.Update(item);
-                _unitOfWork.SaveChanges();
-
-                result = CommonResponse(0, Common.Constants.Data.UpdateSuccess);
-            }
-            catch (Exception ex)
-            {
-                UnitOfWork.Rollback();
-                Debug.WriteLine("Error: ", ex.ToString());
-                result = CommonResponse(0, Common.Constants.Server.ErrorServer);
-            }
-
+            var result = _productService.Update(category);
             return result;
         }
 
         [HttpDelete]
-        public IActionResult DeleteCategory([FromQuery] String id)
+        public Task<IActionResult> DeleteCategory([FromQuery] String id)
         {
-            IActionResult result;
-            try
-            {
-                var item = _repository.Find(Guid.Parse(id));
-                _repository.Delete(item);
-                _unitOfWork.SaveChanges();
-
-                result = CommonResponse(0, Common.Constants.Data.DeleteSuccess);
-            }
-            catch (Exception ex)
-            {
-                UnitOfWork.Rollback();
-                Debug.WriteLine("Error: ", ex.ToString());
-                result = CommonResponse(0, Common.Constants.Server.ErrorServer);
-            }
-
+            var result = _productService.Delete(Guid.Parse(id));
             return result;
         }
     }

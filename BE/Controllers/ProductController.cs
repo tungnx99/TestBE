@@ -20,15 +20,11 @@ namespace BE.Controllers
     [ApiController]
     public class ProductController : BaseController
     {
-        private readonly IRepository<Product> _repository;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
 
-        public ProductController(IRepository<Product> repository, IUnitOfWork unitOfWork, IProductService productService, IMapper mapper)
+        public ProductController(IProductService productService, IMapper mapper)
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
             _productService = productService;
             _mapper = mapper;
         }
@@ -45,75 +41,30 @@ namespace BE.Controllers
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.ToString());
-                result = CommonResponse(1, ex.ToString());
+                result = CommonResponse(1, Constants.Server.ErrorServer);
             }
 
             return result;
         }
 
         [HttpPost]
-        public IActionResult SaveCategory([FromForm] ProductDTO dto)
+        public Task<IActionResult> SaveCategory([FromForm] ProductDTOInsert dto)
         {
-            IActionResult result;
-            try
-            {
-                var item = _mapper.Map<ProductDTO, Product>(dto);
-                _repository.Insert(item);
-                _unitOfWork.SaveChanges();
-
-                result = CommonResponse(0, Common.Constants.Data.InsertSuccess);
-            }
-            catch (Exception ex)
-            {
-                _unitOfWork.Rollback();
-                Debug.WriteLine("Error: ", ex.ToString());
-                result = CommonResponse(0, Common.Constants.Server.ErrorServer);
-            }
-
+            var result = _productService.Create(dto);
             return result;
         }
 
         [HttpPut]
-        public IActionResult UpdateCategory([FromForm] ProductDTO category)
+        public Task<IActionResult> UpdateCategory([FromForm] ProductDTO category)
         {
-            IActionResult result;
-            try
-            {
-                var item = _mapper.Map<ProductDTO, Product>(category);
-                _repository.Update(item);
-                _unitOfWork.SaveChanges();
-
-                result = CommonResponse(0, Common.Constants.Data.UpdateSuccess);
-            }
-            catch (Exception ex)
-            {
-                _unitOfWork.Rollback();
-                Debug.WriteLine("Error: ", ex.ToString());
-                result = CommonResponse(0, Common.Constants.Server.ErrorServer);
-            }
-
+            var result = _productService.Update(category);
             return result;
         }
 
         [HttpDelete]
-        public IActionResult DeleteCategory([FromQuery] String id)
+        public Task<IActionResult> DeleteCategory([FromQuery] String id)
         {
-            IActionResult result;
-            try
-            {
-                var item = _repository.Find(Guid.Parse(id));
-                _repository.Delete(item);
-                _unitOfWork.SaveChanges();
-
-                result = CommonResponse(0, Common.Constants.Data.DeleteSuccess);
-            }
-            catch (Exception ex)
-            {
-                _unitOfWork.Rollback();
-                Debug.WriteLine("Error: ", ex.ToString());
-                result = CommonResponse(0, Common.Constants.Server.ErrorServer);
-            }
-
+            var result = _productService.Delete(Guid.Parse(id));
             return result;
         }
     }

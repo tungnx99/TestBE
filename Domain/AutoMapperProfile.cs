@@ -11,8 +11,14 @@ namespace Domain
         public AutoMapperProfile()
         {
             CreateMap<Category, CategoryDTO>().ReverseMap();
+            CreateMap<CategoryDTOInsert, Category>().ReverseMap();
+
             CreateMap<Product, ProductDTO>().ReverseMap();
+            CreateMap<Product, ProductDTOInsert>().ReverseMap();
+            CreateMap<Product, SearchProductDTO>().ReverseMap();
+
             CreateMap<Supplier, SupplierDTO>().ReverseMap();
+            CreateMap<Supplier, SupplierDTOInsert>().ReverseMap();
         }
     }
 }
