@@ -52,29 +52,50 @@ namespace BE.Controllers
         [HttpGet("all")]
         public Task<IActionResult> GetAll()
         {
-            var result = _categoryService.GetList();
-            return result;
+            IActionResult result;
+            try
+            {
+                var data = _categoryService.GetList();
+                result = CommonResponse(0, data);
+            }catch(Exception ex)
+            {
+                Debug.WriteLine("Error: ", ex.ToString());
+                result = CommonResponse(1, Common.Constants.Server.ErrorServer);
+            }
+            return Task.FromResult(result);
         }
 
         [HttpPost]
         public Task<IActionResult> SaveCategory([FromForm] CategoryDTOInsert category)
         {
             var result = _categoryService.Create(category);
-            return result;
+            if(!result)
+            {
+                return Task.FromResult(CommonResponse(1, Constants.Server.ErrorServer));
+            }
+            return Task.FromResult(CommonResponse(0, Constants.Data.InsertSuccess));
         }
 
         [HttpPut]
         public Task<IActionResult> UpdateCategory([FromForm] CategoryDTO category)
         {
             var result = _categoryService.Update(category);
-            return result;
+            if (!result)
+            {
+                return Task.FromResult(CommonResponse(1, Constants.Server.ErrorServer));
+            }
+            return Task.FromResult(CommonResponse(0, Constants.Data.UpdateSuccess));
         }
 
         [HttpDelete]
         public Task<IActionResult> DeleteCategory([FromQuery] String id)
         {
             var result = _categoryService.Delete(Guid.Parse(id));
-            return result;
+            if (!result)
+            {
+                return Task.FromResult(CommonResponse(1, Constants.Server.ErrorServer));
+            }
+            return Task.FromResult(CommonResponse(0, Constants.Data.DeleteSuccess));
         }
     }
 }

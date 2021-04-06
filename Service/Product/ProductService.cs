@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Common.Category;
 using Common.Http;
 using Common.Paganation;
 using Domain.DTOs;
@@ -31,61 +32,61 @@ namespace Service.Product
             _unitOfWork = unitOfWork;
         }
 
-        public Task<IActionResult> Create(ProductDTOInsert entity)
+        public Boolean Create(ProductDTOInsert entity)
         {
-            IActionResult result;
+            Boolean result;
             try
             {
                 var item = _mapper.Map<ProductDTOInsert, Domain.Entities.Product>(entity);
                 _repositoryProduct.Insert(item);
                 _unitOfWork.SaveChanges();
-                result = new JsonResult(new CommonResponse<string>(0, Common.Constants.Data.InsertSuccess));
+                result = true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: ", ex.ToString());
-                result = new JsonResult(new CommonResponse<string>(1, Common.Constants.Server.ErrorServer));
+                result = false;
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task<IActionResult> Delete(Guid id)
+        public Boolean Delete(Guid id)
         {
-            IActionResult result;
+            Boolean result;
             try
             {
                 var item = _repositoryProduct.Find(id);
                 _repositoryProduct.Delete(item);
                 _unitOfWork.SaveChanges();
-                result = new JsonResult(new CommonResponse<string>(0, Common.Constants.Data.DeleteSuccess));
+                result = true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: ", ex.ToString());
-                result = new JsonResult(new CommonResponse<string>(1, Common.Constants.Server.ErrorServer));
+                result = false;
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task<IActionResult> Update(ProductDTO entity)
+        public Boolean Update(ProductDTO entity)
         {
-            IActionResult result;
+            Boolean result;
             try
             {
                 var item = _mapper.Map<ProductDTO, Domain.Entities.Product>(entity);
                 _repositoryProduct.Update(item);
                 _unitOfWork.SaveChanges();
-                result = new JsonResult(new CommonResponse<string>(0, Common.Constants.Data.UpdateSuccess));
+                result = true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: ", ex.ToString());
-                result = new JsonResult(new CommonResponse<string>(1, Common.Constants.Server.ErrorServer));
+                result = false;
             }
 
-            return Task.FromResult(result);
+            return result;
         }
         PaginatedList<ProductDTO> IBasePagingService<ProductDTO, SearchProductDTO>.SearchPagination(SerachPaganationDTO<SearchProductDTO> entity)
         {
@@ -119,7 +120,7 @@ namespace Service.Product
 
             //clean
             var total = query.Count();
-            var pageitems = query.Skip(entity.PageIndex * entity.PageSize).Take(entity.PageSize);
+            var pageitems = query.Skip((entity.PageIndex - 1) * entity.PageSize).Take(entity.PageSize);
             var data = _mapper.Map<List<Domain.Entities.Product>, List<ProductDTO>>(pageitems.ToList());
             var result = new PaginatedList<ProductDTO>(data, total, entity.PageIndex, entity.PageSize);
 

@@ -53,79 +53,79 @@ namespace Service.Supplier
             return result;
         }
 
-        public Task<IActionResult> Create(SupplierDTOInsert entity)
+        public Boolean Create(SupplierDTOInsert entity)
         {
-            IActionResult result;
+            Boolean result;
             try
             {
                 var item = _mapper.Map<SupplierDTOInsert, Domain.Entities.Supplier>(entity);
                 _repository.Insert(item);
                 _unitOfWork.SaveChanges();
-                result = new JsonResult(new CommonResponse<string>(0, Common.Constants.Data.InsertSuccess));
+                result = true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: ", ex.ToString());
-                result = new JsonResult(new CommonResponse<string>(1, Common.Constants.Server.ErrorServer));
+                result = false;
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task<IActionResult> Delete(Guid id)
+        public Boolean Delete(Guid id)
         {
-            IActionResult result;
+            Boolean result;
             try
             {
                 var item = _repository.Find(id);
                 item.IsDeleted = true;
                 _repository.Update(item);
                 _unitOfWork.SaveChanges();
-                result = new JsonResult(new CommonResponse<string>(0, Common.Constants.Data.DeleteSuccess));
+                result = true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: ", ex.ToString());
-                result = new JsonResult(new CommonResponse<string>(1, Common.Constants.Server.ErrorServer));
+                result = false;
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task<IActionResult> Update(SupplierDTO entity)
+        public Boolean Update(SupplierDTO entity)
         {
-            IActionResult result;
+            Boolean result;
             try
             {
                 var item = _mapper.Map<SupplierDTO, Domain.Entities.Supplier>(entity);
                 _repository.Update(item);
                 _unitOfWork.SaveChanges();
-                result = new JsonResult(new CommonResponse<string>(0, Common.Constants.Data.UpdateSuccess));
+                result = true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: ", ex.ToString());
-                result = new JsonResult(new CommonResponse<string>(1, Common.Constants.Server.ErrorServer));
+                result = false;
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task<IActionResult> GetList()
+        public List<SupplierDTO> GetList()
         {
-            IActionResult result;
+            List<SupplierDTO> result;
             try
             {
                 var products = _repository.Queryable().Where(it => it.IsDeleted == false).ToList();
-                result = new JsonResult(new CommonResponse<List<Domain.Entities.Supplier>>(0, products));
+                result = _mapper.Map<List<Domain.Entities.Supplier>, List<SupplierDTO>>(products);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.ToString());
-                result = new JsonResult(new CommonResponse<String>(1, Constants.Server.ErrorServer));
+                throw new Exception(ex.ToString());
             }
 
-            return Task.FromResult(result);
+            return result;
         }
     }
 }

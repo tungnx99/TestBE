@@ -1,7 +1,7 @@
 ﻿using Common.Paganation;
 using Infrastructure.EntityFramework;
 
-namespace Service.Category
+namespace Common.Category
 {
     public interface IBasePagingService<T,F>
     {

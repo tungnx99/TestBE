@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Service.BaseService
+namespace Common.BaseService
 {
     public interface IBaseEditService<T, F> where T : class where F : class
     {
-        Task<IActionResult> Create(F entity);
-        Task<IActionResult> Update(T entity);
-        Task<IActionResult> Delete(Guid id);
+        Boolean Create(F entity);
+        Boolean Update(T entity);
+        Boolean Delete(Guid id);
     }
 }

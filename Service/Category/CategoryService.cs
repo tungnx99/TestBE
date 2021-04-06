@@ -71,7 +71,7 @@ namespace Service.Category
                 return new PaginatedList<CategoryDTO>(null, 0, 0, 0);
             }
 
-            var query = _repository.Queryable().Where(it => it.IsDeleted == false && 
+            var query = _repository.Queryable().Where(it => it.IsDeleted == false &&
                 (
                     entity.Search == null ||
                         (
@@ -90,79 +90,79 @@ namespace Service.Category
             return result;
         }
 
-        public Task<IActionResult> Create(CategoryDTOInsert entity)
+        public Boolean Create(CategoryDTOInsert entity)
         {
-            IActionResult result;
+            Boolean result;
             try
             {
                 var item = _mapper.Map<CategoryDTOInsert, Domain.Entities.Category>(entity);
                 _repository.Insert(item);
                 _unitOfWork.SaveChanges();
-                result = new JsonResult(new CommonResponse<string>(0, Common.Constants.Data.InsertSuccess));
+                result = true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: ", ex.ToString());
-                result = new JsonResult(new CommonResponse<string>(1, Common.Constants.Server.ErrorServer));
+                result = false;
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task<IActionResult> Delete(Guid id)
+        public Boolean Delete(Guid id)
         {
-            IActionResult result;
+            Boolean result;
             try
             {
                 var item = _repository.Find(id);
                 item.IsDeleted = true;
                 _repository.Update(item);
                 _unitOfWork.SaveChanges();
-                result = new JsonResult(new CommonResponse<string>(0, Common.Constants.Data.DeleteSuccess));
+                result = true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: ", ex.ToString());
-                result = new JsonResult(new CommonResponse<string>(1, Common.Constants.Server.ErrorServer));
+                result = false;
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task<IActionResult> Update(CategoryDTO entity)
+        public Boolean Update(CategoryDTO entity)
         {
-            IActionResult result;
+            Boolean result;
             try
             {
                 var item = _mapper.Map<CategoryDTO, Domain.Entities.Category>(entity);
                 _repository.Update(item);
                 _unitOfWork.SaveChanges();
-                result = new JsonResult(new CommonResponse<string>(0, Common.Constants.Data.UpdateSuccess));
+                result = true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: ", ex.ToString());
-                result = new JsonResult(new CommonResponse<string>(1, Common.Constants.Server.ErrorServer));
+                result = false;
             }
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task<IActionResult> GetList()
+        public List<CategoryDTO> GetList()
         {
-            IActionResult result;
+            List<CategoryDTO> result;
             try
             {
                 var products = _repository.Queryable().Where(it => it.IsDeleted == false).ToList();
-                result = new JsonResult(new CommonResponse<List<Domain.Entities.Category>>(0, products));
+                result = _mapper.Map<List<Domain.Entities.Category>, List<CategoryDTO>>(products);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error: " + ex.ToString());
-                result = new JsonResult(new CommonResponse<String>(1, Constants.Server.ErrorServer));
+                throw new Exception(ex.ToString());
             }
 
-            return Task.FromResult(result);
+            return result;
         }
     }
 }

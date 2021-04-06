@@ -51,21 +51,33 @@ namespace BE.Controllers
         public Task<IActionResult> SaveCategory([FromForm] ProductDTOInsert dto)
         {
             var result = _productService.Create(dto);
-            return result;
+            if (!result)
+            {
+                return Task.FromResult(CommonResponse(1, Constants.Server.ErrorServer));
+            }
+            return Task.FromResult(CommonResponse(0, Constants.Data.InsertSuccess));
         }
 
         [HttpPut]
         public Task<IActionResult> UpdateCategory([FromForm] ProductDTO category)
         {
             var result = _productService.Update(category);
-            return result;
+            if (!result)
+            {
+                return Task.FromResult(CommonResponse(1, Constants.Server.ErrorServer));
+            }
+            return Task.FromResult(CommonResponse(0, Constants.Data.UpdateSuccess));
         }
 
         [HttpDelete]
         public Task<IActionResult> DeleteCategory([FromQuery] String id)
         {
             var result = _productService.Delete(Guid.Parse(id));
-            return result;
+            if (!result)
+            {
+                return Task.FromResult(CommonResponse(1, Constants.Server.ErrorServer));
+            }
+            return Task.FromResult(CommonResponse(0, Constants.Data.DeleteSuccess));
         }
     }
 }
