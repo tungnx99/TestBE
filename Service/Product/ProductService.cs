@@ -70,6 +70,33 @@ namespace Service.Product
             return result;
         }
 
+        public ProductDTOReturn GetByID(Guid id)
+        {
+            ProductDTOReturn result;
+            try
+            {
+                var product = _repositoryProduct.Queryable().Where(it => it.Id == id).Select(
+                    it =>
+                    new ProductDTOReturn()
+                    {
+                        Id = it.Id,
+                        Description = it.Description,
+                        CategoryName = it.Category.Name,
+                        Name = it.Name,
+                        SupplierName = it.Supplier.Name,
+                        CategoryId = it.CategoryId.GetValueOrDefault(),
+                        SupplierId = it.SupplierId.GetValueOrDefault()
+                    }
+                );
+                result = product.FirstOrDefault();
+            }catch(Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+
+            return result;
+        }
+
         public Boolean Update(ProductDTO entity)
         {
             Boolean result;
@@ -88,11 +115,11 @@ namespace Service.Product
 
             return result;
         }
-        PaginatedList<ProductDTO> IBasePagingService<ProductDTO, SearchProductDTO>.SearchPagination(SerachPaganationDTO<SearchProductDTO> entity)
+        PaginatedList<ProductDTOReturn> IBasePagingService<ProductDTOReturn, SearchProductDTO>.SearchPagination(SerachPaganationDTO<SearchProductDTO> entity)
         {
             if (entity == null)
             {
-                return new PaginatedList<ProductDTO>(null, 0, 0, 0);
+                return new PaginatedList<ProductDTOReturn>(null, 0, 0, 0);
             }
 
             var query = _repositoryProduct.Queryable().Where(it => entity.Search == null ||
@@ -103,7 +130,17 @@ namespace Service.Product
                     (entity.Search.Supplier == null ? false : it.Supplier.Name.Contains(entity.Search.Supplier.Name)) ||
                     (entity.Search.Category == null ? false : it.Category.Name.Contains(entity.Search.Category.Name))
                 )
-            ).OrderBy(t => t.Name);
+            ).Select(it => new ProductDTOReturn()
+            {
+                Id = it.Id,
+                Description = it.Description,
+                CategoryName = it.Category.Name,
+                Name = it.Name,
+                SupplierName = it.Supplier.Name,
+                CategoryId = it.CategoryId.GetValueOrDefault(),
+                SupplierId = it.SupplierId.GetValueOrDefault()
+            })
+            .OrderBy(t => t.Name);
 
             //var query = (
             //                 from p in _repositoryProduct.Queryable()
@@ -121,8 +158,9 @@ namespace Service.Product
             //clean
             var total = query.Count();
             var pageitems = query.Skip((entity.PageIndex - 1) * entity.PageSize).Take(entity.PageSize);
-            var data = _mapper.Map<List<Domain.Entities.Product>, List<ProductDTO>>(pageitems.ToList());
-            var result = new PaginatedList<ProductDTO>(data, total, entity.PageIndex, entity.PageSize);
+            //var data = _mapper.Map<List<Domain.Entities.Product>, List<ProductDTOReturn>>(pageitems.ToList());
+            var data = pageitems.ToList();
+            var result = new PaginatedList<ProductDTOReturn>(data, total, entity.PageIndex, entity.PageSize);
 
             return result;
         }

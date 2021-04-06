@@ -15,7 +15,7 @@ namespace Domain
 
             CreateMap<Product, ProductDTO>().ReverseMap();
             CreateMap<Product, ProductDTOInsert>().ReverseMap();
-            CreateMap<Product, SearchProductDTO>().ReverseMap();
+            CreateMap<Product, ProductDTOReturn>().ReverseMap();
 
             CreateMap<Supplier, SupplierDTO>().ReverseMap();
             CreateMap<Supplier, SupplierDTOInsert>().ReverseMap();

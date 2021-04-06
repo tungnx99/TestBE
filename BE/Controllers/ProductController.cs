@@ -47,6 +47,22 @@ namespace BE.Controllers
             return result;
         }
 
+        [HttpGet("getbyid")]
+        public Task<IActionResult> GetById([FromQuery] String id)
+        {
+            IActionResult result;
+            try
+            {
+                var productdto = _productService.GetByID(Guid.Parse(id));
+                result = CommonResponse(0, productdto);
+            }catch (Exception ex)
+            {
+                Debug.WriteLine("Error: ", ex.ToString());
+                result = CommonResponse(1, Constants.Server.ErrorServer);
+            }
+            return Task.FromResult(result);
+        }
+
         [HttpPost]
         public Task<IActionResult> SaveCategory([FromForm] ProductDTOInsert dto)
         {

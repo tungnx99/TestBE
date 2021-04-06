@@ -33,4 +33,15 @@ namespace Domain.DTOs
         public Guid SupplierId { get; set; }
         public SupplierDTO Supplier { get; set; }
     }
+
+    public class ProductDTOReturn
+    {
+        public Guid Id { get; set; }
+        public String Name { get; set; }
+        public String Description { get; set; }
+        public String CategoryName { get; set; }
+        public String SupplierName { get; set; }
+        public Guid CategoryId { get; set; }
+        public Guid SupplierId { get; set; }
+    }
 }
