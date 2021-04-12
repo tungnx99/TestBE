@@ -2,9 +2,11 @@
 using Infrastructure.EntityFramework;
 using Infrastructure.EntityFramework.Factories;
 using Microsoft.Extensions.DependencyInjection;
+using Service.Auth;
 using Service.Category;
 using Service.Product;
 using Service.Supplier;
+using Service.Users;
 
 namespace Service
 {
@@ -24,6 +26,11 @@ namespace Service
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ISupplierService, SupplierService>();
+
+            //account
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IJwtManager, JwtManager>();
         }
     }
 }

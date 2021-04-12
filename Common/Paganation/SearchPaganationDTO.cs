@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Common.Paganation
 {
-    public class SerachPaganationDTO<T>
+    public class SearchPaganationDTO<T>
     {
 
         public T Search { get; set; }

@@ -31,7 +31,7 @@ namespace BE.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCategories([FromQuery] SerachPaganationDTO<CategoryDTO> serachPaganation)
+        public IActionResult GetCategories([FromQuery] SearchPaganationDTO<CategoryDTO> serachPaganation)
         {
 
             IActionResult result;

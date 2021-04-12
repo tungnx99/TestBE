@@ -27,7 +27,7 @@ namespace Service.Supplier
             _unitOfWork = unitOfWork;
         }
 
-        public PaginatedList<SupplierDTO> SearchPagination(SerachPaganationDTO<SupplierDTO> entity)
+        public PaginatedList<SupplierDTO> SearchPagination(SearchPaganationDTO<SupplierDTO> entity)
         {
             if (entity == null)
             {

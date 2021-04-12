@@ -3,6 +3,7 @@ using Common.Paganation;
 using Domain.DTOs;
 using Domain.Entities;
 using Infrastructure.EntityFramework;
+using Microsoft.AspNetCore.Http;
 
 namespace Domain
 {
@@ -19,6 +20,10 @@ namespace Domain
 
             CreateMap<Supplier, SupplierDTO>().ReverseMap();
             CreateMap<Supplier, SupplierDTOInsert>().ReverseMap();
+
+            CreateMap<IFormFile, File>().ReverseMap();
+
+            CreateMap<UserDTO, User>().ReverseMap();
         }
     }
 }

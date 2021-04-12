@@ -115,7 +115,7 @@ namespace Service.Product
 
             return result;
         }
-        PaginatedList<ProductDTOReturn> IBasePagingService<ProductDTOReturn, SearchProductDTO>.SearchPagination(SerachPaganationDTO<SearchProductDTO> entity)
+        PaginatedList<ProductDTOReturn> IBasePagingService<ProductDTOReturn, SearchProductDTO>.SearchPagination(SearchPaganationDTO<SearchProductDTO> entity)
         {
             if (entity == null)
             {

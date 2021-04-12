@@ -27,7 +27,7 @@ namespace Service.Category
             _unitOfWork = unitOfWork;
         }
 
-        public PaginatedList<CategoryDTO> SearchPagination(SerachPaganationDTO<CategoryDTO> entity)
+        public PaginatedList<CategoryDTO> SearchPagination(SearchPaganationDTO<CategoryDTO> entity)
         {
             //List<Domain.Entities.Category> categories = new List<Domain.Entities.Category>();
             //List<Domain.Entities.Product> products = new List<Domain.Entities.Product>();

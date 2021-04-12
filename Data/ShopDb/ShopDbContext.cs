@@ -16,6 +16,7 @@ namespace Data
         DbSet<Category> Categories { get; set; }
         DbSet<Supplier> Suppliers { get; set; }
         DbSet<Product> Products { get; set; }
+        DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

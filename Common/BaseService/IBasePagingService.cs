@@ -5,6 +5,6 @@ namespace Common.Category
 {
     public interface IBasePagingService<T,F>
     {
-        public PaginatedList<T> SearchPagination(SerachPaganationDTO<F> entity);
+        public PaginatedList<T> SearchPagination(SearchPaganationDTO<F> entity);
     }
 }
